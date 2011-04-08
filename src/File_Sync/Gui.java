@@ -19,13 +19,13 @@ public class Gui extends JFrame {
     final DefaultListModel Model = new DefaultListModel(); 
     String bs = "\\";
     
-    File path, filename;
+    File fromPath, fromFilename, toPath, toFilename;
     
 
     //================================================= constructor
     Gui() {
         //... Create / set component characteristics.
-        fromfileNameTF.setEditable(true);
+        fromfileNameTF.setEditable(false);
         tofileNameTF.setEditable(false);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
@@ -39,7 +39,7 @@ public class Gui extends JFrame {
         JButton BuProtocol = new JButton("Protocol");
         BuFrom.addActionListener(new OpenAction());
         BuTo.addActionListener(new OpenAction());
-       // BuStart.addActionListener(new StartAction());
+        BuStart.addActionListener(new StartAction());
        // BuStopp.addActionListener(new StopAction());
         
         
@@ -96,7 +96,6 @@ public class Gui extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
             //... Open a file dialog.
             int retval = fileChooser.showOpenDialog(Gui.this);
-            
             JButton BuTmp = (JButton)ae.getSource();
             
             if (retval == JFileChooser.APPROVE_OPTION) {
@@ -106,32 +105,69 @@ public class Gui extends JFrame {
                 
                 if (BuTmp.getText() == "Path From"){
                 fromfileNameTF.setText(path.getAbsolutePath() +bs +file.getName());
-                setPath(path);
-                setFilename(file);
+                setFromPath(path);
+                setFromFilename(file);
                 updateJlist();
                 }
                 else
                 tofileNameTF.setText(path.getAbsolutePath() +bs +file.getName());
+                setToPath(path);
+                setToFilename(file);
             }
         }
 
     }
     
-    public void setPath(File p){
-    	 path = p;
+    ///////////////////////////////////////////////////// StartAction
+    class StartAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+            if (getFromFilename() != null && getToFilename() != null) {
+            	try {
+					startup.sync(fromPath, fromFilename, toPath, toFilename);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        }
+
     }
-    public void setFilename(File n){
-   	 filename = n;
+    
+    
+    
+    public void setFromPath(File p){
+    	 fromPath = p;
+    }
+    public void setFromFilename(File n){
+    	fromFilename = n;
    }
     
-    public File getPath(){
-    	return path;
+    public File getFromPath(){
+    	return fromPath;
     }
-    public File getFilename(){
-    	return filename;
+    public File getFromFilename(){
+    	return fromFilename;
     }
+    public void setToPath(File p){
+   	 toPath = p;
+   }
+   public void setToFilename(File n){
+  	 toFilename = n;
+  }
+   
+   public File getToPath(){
+   	return toPath;
+   }
+   public File getToFilename(){
+   	return toFilename;
+   }
+    
+    
+   
+   
+    
     public void updateJlist(){
-    File f = getPath();
+    File f = getFromPath();
     String[] elements = f.list();
 
     
@@ -174,11 +210,8 @@ public class Gui extends JFrame {
     	return 
     }
     */
-    
-    //========================================================= main
-    public static void main(String[] args) {
-        JFrame window = new Gui();
-        window.setSize(500, 400);
-        window.setVisible(true);
-    }
+    /*
+     * 
+     */
 }
+
