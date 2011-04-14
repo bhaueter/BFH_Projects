@@ -34,14 +34,12 @@ public class Gui extends JFrame {
     Gui() {
         //... Create / set component characteristics.
         fromfileNameTF.setEditable(false);
-        //fromfileNameTF.setSize(100, 25);
         tofileNameTF.setEditable(false);
-        //tofileNameTF.setSize(10, 50);
-
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         //... Create elements Add listeners
         JButton BuFrom	= new JButton("Path From");
+
         JButton BuTo	= new JButton("Path To");
         JButton BuStart	= new JButton("Start");
         JButton BuStopp	= new JButton("Stopp");
@@ -49,6 +47,11 @@ public class Gui extends JFrame {
         BuFrom.addActionListener(new OpenAction());
         BuTo.addActionListener(new OpenAction());
         BuStart.addActionListener(new StartAction());
+        
+        
+        JLabel infoLabel = new JLabel();
+        infoLabel.setPreferredSize(new Dimension(0, 280));
+        
        // BuStopp.addActionListener(new StopAction());
         
         
@@ -73,31 +76,31 @@ public class Gui extends JFrame {
         dirPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         dirPanel.add(pathFromPanel);
         dirPanel.add(pathToPanel);
-        dirPanel.setPreferredSize(getMinimumSize());
+        dirPanel.add(infoLabel);
+        
+        
+
+        
+        
         
         
         //List Panel
         JPanel listPanel = new JPanel();
+        listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
         JList fileList = new JList(Model);  /*getPath().list()*/
-        fileList.setLayoutOrientation(JList.VERTICAL);
-        fileList.setVisibleRowCount(-1);
-        
-        JScrollPane listScroller = new JScrollPane(fileList);
-        listScroller.setPreferredSize(new Dimension(200, 200));
-        
-        listPanel.add(fileList);
-        
-        
+        JScrollPane scrol = new JScrollPane(fileList);
+        scrol.getViewport().setView(fileList);
+        listPanel.add(scrol);
+        listPanel.add(infoLabel);
         
         
         JPanel protPanel = new JPanel();
-        
+        protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
+        protPanel.add(infoLabel);
+
         
         JPanel infoPanel = new JPanel();
-        infoPanel.setBorder(BorderFactory.createTitledBorder("Info"));
         infoPanel.setLayout(new GridLayout(1,2));
-        infoPanel.setBackground(white);
-        infoPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         infoPanel.add(listPanel);
         infoPanel.add(protPanel);
 
@@ -106,11 +109,10 @@ public class Gui extends JFrame {
         mergePanel.setLayout(new BoxLayout(mergePanel, BoxLayout.Y_AXIS));
         mergePanel.add(dirPanel);
         mergePanel.add(infoPanel);
-        
-        
-        
         listPanel.add(fileList);
         
+        
+        // Action Panel
         JPanel perform = new JPanel();
         perform.add(BuStart);
         perform.add(BuStopp);
@@ -118,10 +120,9 @@ public class Gui extends JFrame {
         
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
-        display.setBounds(0, 0, 500, 400);
         display.add(mergePanel,BorderLayout.CENTER);
+        //display.add(scrol, BorderLayout.WEST);
         display.add(perform, BorderLayout.SOUTH);
-        
 
 /*        //... Assemble the menu
         menubar.add(fileMenu);
@@ -164,7 +165,7 @@ public class Gui extends JFrame {
 
     }
     
-    ///////////////////////////////////////////////////// StartAction
+    //StartAction
     class StartAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
             if (getFromFilename() != null && getToFilename() != null) {
@@ -210,7 +211,6 @@ public class Gui extends JFrame {
     
     
    
-   
     
     public void updateJlist(){
     File f = getFromPath();
@@ -226,38 +226,6 @@ public class Gui extends JFrame {
     
     
     
-    
- /*   
-    //============================================= Get List String 
-    public Object[] getListData(File f){
-    	
-    	
-    		f.
-    	
-            try {
-                Scanner in = new Scanner(f);
 
-                while (in.hasNext()) {
-                    String word = in.next();  // Read a "token".
-                    numberOfWords++;
-                }
-                in.close();        // Close Scanner's file.
-
-            } catch (FileNotFoundException fnfex) {
-                // ... We just got the file from the JFileChooser,
-                //     so it's hard to believe there's problem, but...
-                JOptionPane.showMessageDialog(Gui.this,
-                            fnfex.getMessage());
-            }
-            return numberOfWords;
-        }
-    	
-    	
-    	return 
-    }
-    */
-    /*
-     * 
-     */
 }
 
