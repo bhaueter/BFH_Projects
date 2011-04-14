@@ -8,10 +8,12 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-//////////////////////////////////////////////////////// CountWords
+//////////////////////////////////////////////////////// CountWords Test
 public class Gui extends JFrame {
 
-    //====================================================== fields
+	// Variable Definition
+	
+	// Gui Elements
     JTextField   fromfileNameTF  = new JTextField(30);
     JTextField   tofileNameTF  = new JTextField(30);
     JFileChooser fileChooser = new JFileChooser();
@@ -21,19 +23,26 @@ public class Gui extends JFrame {
     
     File fromPath, fromFilename, toPath, toFilename;
     
+    
+    // Colors
+    Color white, black;
+    
+    
+    
 
     //================================================= constructor
     Gui() {
         //... Create / set component characteristics.
         fromfileNameTF.setEditable(false);
+        //fromfileNameTF.setSize(100, 25);
         tofileNameTF.setEditable(false);
+        //tofileNameTF.setSize(10, 50);
+
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         //... Create elements Add listeners
         JButton BuFrom	= new JButton("Path From");
-        BuFrom.setBounds(0, 0, 20, 5);
         JButton BuTo	= new JButton("Path To");
-        BuTo.setBounds(0, 0, 20, 5);
         JButton BuStart	= new JButton("Start");
         JButton BuStopp	= new JButton("Stopp");
         JButton BuProtocol = new JButton("Protocol");
@@ -45,22 +54,60 @@ public class Gui extends JFrame {
         
         //... Create content pane, layout components
 
+        // FromPanel
+        JPanel pathFromPanel = new JPanel();
+        pathFromPanel.setBorder(BorderFactory.createTitledBorder("From Destination"));
+        pathFromPanel.setLayout(new BoxLayout(pathFromPanel, BoxLayout.X_AXIS)); 
+        pathFromPanel.add(BuFrom);
+        pathFromPanel.add(fromfileNameTF);
         
-        JPanel pathPanel = new JPanel();
-        pathPanel.setLayout(new GridLayout(2,2));
-        pathPanel.add(BuFrom);
-        pathPanel.add(fromfileNameTF);
-        pathPanel.add(BuTo);
-        pathPanel.add(tofileNameTF);
+        JPanel pathToPanel = new JPanel();
+        pathToPanel.setBorder(BorderFactory.createTitledBorder("To Destination"));
+        pathToPanel.setLayout(new BoxLayout(pathToPanel, BoxLayout.X_AXIS)); 
+        pathToPanel.add(BuTo);
+        pathToPanel.add(tofileNameTF);
         
+        JPanel dirPanel = new JPanel();
+        dirPanel.setLayout(new BoxLayout(dirPanel, BoxLayout.Y_AXIS));
+        dirPanel.setBackground(white);
+        dirPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        dirPanel.add(pathFromPanel);
+        dirPanel.add(pathToPanel);
+        dirPanel.setPreferredSize(getMinimumSize());
+        
+        
+        //List Panel
         JPanel listPanel = new JPanel();
         JList fileList = new JList(Model);  /*getPath().list()*/
+        fileList.setLayoutOrientation(JList.VERTICAL);
+        fileList.setVisibleRowCount(-1);
         
         JScrollPane listScroller = new JScrollPane(fileList);
-        fileList.setLayoutOrientation(JList.VERTICAL_WRAP);
-        listScroller.setVisible(true);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        listScroller.setPreferredSize(new Dimension(200, 200));
+        
+        listPanel.add(fileList);
+        
+        
+        
+        
+        JPanel protPanel = new JPanel();
+        
+        
+        JPanel infoPanel = new JPanel();
+        infoPanel.setBorder(BorderFactory.createTitledBorder("Info"));
+        infoPanel.setLayout(new GridLayout(1,2));
+        infoPanel.setBackground(white);
+        infoPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        infoPanel.add(listPanel);
+        infoPanel.add(protPanel);
 
+        
+        JPanel mergePanel = new JPanel();
+        mergePanel.setLayout(new BoxLayout(mergePanel, BoxLayout.Y_AXIS));
+        mergePanel.add(dirPanel);
+        mergePanel.add(infoPanel);
+        
+        
         
         listPanel.add(fileList);
         
@@ -72,8 +119,7 @@ public class Gui extends JFrame {
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
         display.setBounds(0, 0, 500, 400);
-        display.add(pathPanel,BorderLayout.NORTH);
-        display.add(listPanel, BorderLayout.WEST);
+        display.add(mergePanel,BorderLayout.CENTER);
         display.add(perform, BorderLayout.SOUTH);
         
 
@@ -84,14 +130,14 @@ public class Gui extends JFrame {
         //... Set window characteristics
 //        this.setJMenuBar(menubar);
         this.setContentPane(display);
-        this.setTitle("File Snychronisation");
+        this.setTitle("File Snychronization");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                      // Layout components.
         this.setLocationRelativeTo(null); // Center window.
     }
 
 
-    ///////////////////////////////////////////////////// OpenAction
+    // OpenAction
     class OpenAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
             //... Open a file dialog.
