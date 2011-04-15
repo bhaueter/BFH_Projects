@@ -1,5 +1,6 @@
 package src.File_Sync;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -8,12 +9,22 @@ import javax.swing.JFrame;
 import src.File_Sync.gui.Gui;
 import src.File_Sync.synchronizer.FileOptions;
 
+<<<<<<< HEAD
 
 public class StartUp {
+=======
+public class startup {
+
+>>>>>>> blabla/master
 	public static void main(String[] args) {
+	
+	//	Color white;
+		
 		
     JFrame window = new Gui();
-    window.setSize(500, 400);
+    
+    //window.setBackground(white);
+    window.setSize(500,500);
     window.setVisible(true);
         
 
