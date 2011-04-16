@@ -5,15 +5,20 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import org.apache.log4j.Logger;
+
 import src.File_Sync.StartUp;
+import src.File_Sync.log4j.Log4j;
+import src.File_Sync.synchronizer.FileOptions;
 
 import java.io.*;
-import java.util.*;
 
-//////////////////////////////////////////////////////// CountWords
+//////////////////////////////////////////////////////// CountWords Test
 public class Gui extends JFrame {
 
-    //====================================================== fields
+	// Variable Definition
+	
+	// Gui Elements
     JTextField   fromfileNameTF  = new JTextField(30);
     JTextField   tofileNameTF  = new JTextField(30);
     JFileChooser fileChooser = new JFileChooser();
@@ -22,10 +27,27 @@ public class Gui extends JFrame {
     String bs = "\\";
     
     File fromPath, fromFilename, toPath, toFilename;
+ 
+	private Log4j log;
+	public static Logger logger = Logger.getRootLogger();
+	private FileOptions fOpt;
+    
+    
+    // Colors
+    Color white, black;
+    
+    
     
 
     //================================================= constructor
     public Gui() {
+    	
+    	//Create Logger Log4j
+		log = new Log4j(); 
+		logger = log.logger;
+		
+		logger.debug("logger erstellt");
+    	
         //... Create / set component characteristics.
         fromfileNameTF.setEditable(false);
         tofileNameTF.setEditable(false);
@@ -33,39 +55,102 @@ public class Gui extends JFrame {
 
         //... Create elements Add listeners
         JButton BuFrom	= new JButton("Path From");
-        BuFrom.setBounds(0, 0, 20, 5);
+
         JButton BuTo	= new JButton("Path To");
-        BuTo.setBounds(0, 0, 20, 5);
         JButton BuStart	= new JButton("Start");
         JButton BuStopp	= new JButton("Stopp");
         JButton BuProtocol = new JButton("Protocol");
         BuFrom.addActionListener(new OpenAction());
         BuTo.addActionListener(new OpenAction());
         BuStart.addActionListener(new StartAction());
+        
+        
+        JLabel infoLabel = new JLabel();
+        infoLabel.setPreferredSize(new Dimension(0, 280));
+        
        // BuStopp.addActionListener(new StopAction());
         
         
         //... Create content pane, layout components
 
+        // FromPanel
+        JPanel pathFromPanel = new JPanel();
+        pathFromPanel.setBorder(BorderFactory.createTitledBorder("From Destination"));
+        pathFromPanel.setLayout(new BoxLayout(pathFromPanel, BoxLayout.X_AXIS)); 
+        pathFromPanel.add(BuFrom);
+        pathFromPanel.add(fromfileNameTF);
         
-        JPanel pathPanel = new JPanel();
-        pathPanel.setLayout(new GridLayout(2,2));
-        pathPanel.add(BuFrom);
-        pathPanel.add(fromfileNameTF);
-        pathPanel.add(BuTo);
-        pathPanel.add(tofileNameTF);
+        JPanel pathToPanel = new JPanel();
+        pathToPanel.setBorder(BorderFactory.createTitledBorder("To Destination"));
+        pathToPanel.setLayout(new BoxLayout(pathToPanel, BoxLayout.X_AXIS)); 
+        pathToPanel.add(BuTo);
+        pathToPanel.add(tofileNameTF);
         
-        JPanel listPanel = new JPanel();
-        JList fileList = new JList(Model);  /*getPath().list()*/
+        JPanel dirPanel = new JPanel();
+        dirPanel.setLayout(new BoxLayout(dirPanel, BoxLayout.Y_AXIS));
+        dirPanel.setBackground(white);
+        dirPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        dirPanel.add(pathFromPanel);
+        dirPanel.add(pathToPanel);
+        dirPanel.add(infoLabel);
         
-        JScrollPane listScroller = new JScrollPane(fileList);
-        //fileList.setLayoutOrientation(JList.VERTICAL_WRAP);
-        listScroller.setVisible(true);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        
 
         
+        
+        
+        
+        //List Panel
+        JPanel listPanel = new JPanel();
+        listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
+        JList fileList = new JList(Model);  /*getPath().list()*/
+        JScrollPane scrol = new JScrollPane(fileList);
+        scrol.getViewport().setView(fileList);
+        listPanel.add(scrol);
+        listPanel.add(infoLabel);
+        
+        
+        JPanel protPanel = new JPanel();
+        protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
+   
+        protPanel.setLayout(new GridBagLayout());
+        protPanel.setBackground(Color.CYAN);
+        
+        
+        fOpt = new FileOptions(null, null, null, null);
+        
+		JTextField logField = new JTextField();
+		
+		
+		
+		try {
+			logField.setText(fOpt.getLogFile(new File (log.getLogFilePath())));
+			
+		//	logger.debug("LogField text insertet from LogFile");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		protPanel.add(logField);
+        
+        protPanel.add(infoLabel);
+
+        
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(1,2));
+        infoPanel.add(listPanel);
+        infoPanel.add(protPanel);
+
+        
+        JPanel mergePanel = new JPanel();
+        mergePanel.setLayout(new BoxLayout(mergePanel, BoxLayout.Y_AXIS));
+        mergePanel.add(dirPanel);
+        mergePanel.add(infoPanel);
         listPanel.add(fileList);
         
+        
+        // Action Panel
         JPanel perform = new JPanel();
         perform.add(BuStart);
         perform.add(BuStopp);
@@ -73,11 +158,9 @@ public class Gui extends JFrame {
         
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
-        display.setBounds(0, 0, 500, 400);
-        display.add(pathPanel,BorderLayout.NORTH);
-        display.add(listPanel, BorderLayout.WEST);
+        display.add(mergePanel,BorderLayout.CENTER);
+        //display.add(scrol, BorderLayout.WEST);
         display.add(perform, BorderLayout.SOUTH);
-        
 
 /*        //... Assemble the menu
         menubar.add(fileMenu);
@@ -86,14 +169,14 @@ public class Gui extends JFrame {
         //... Set window characteristics
 //        this.setJMenuBar(menubar);
         this.setContentPane(display);
-        this.setTitle("File Snychronisation");
+        this.setTitle("File Snychronization");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                      // Layout components.
         this.setLocationRelativeTo(null); // Center window.
     }
 
 
-    ///////////////////////////////////////////////////// OpenAction
+    // OpenAction
     class OpenAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
             //... Open a file dialog.
@@ -120,7 +203,7 @@ public class Gui extends JFrame {
 
     }
     
-    ///////////////////////////////////////////////////// StartAction
+    //StartAction
     class StartAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
             if (getFromFilename() != null && getToFilename() != null) {
@@ -166,7 +249,6 @@ public class Gui extends JFrame {
     
     
    
-   
     
     public void updateJlist(){
     File f = getFromPath();
@@ -182,38 +264,6 @@ public class Gui extends JFrame {
     
     
     
-    
- /*   
-    //============================================= Get List String 
-    public Object[] getListData(File f){
-    	
-    	
-    		f.
-    	
-            try {
-                Scanner in = new Scanner(f);
 
-                while (in.hasNext()) {
-                    String word = in.next();  // Read a "token".
-                    numberOfWords++;
-                }
-                in.close();        // Close Scanner's file.
-
-            } catch (FileNotFoundException fnfex) {
-                // ... We just got the file from the JFileChooser,
-                //     so it's hard to believe there's problem, but...
-                JOptionPane.showMessageDialog(Gui.this,
-                            fnfex.getMessage());
-            }
-            return numberOfWords;
-        }
-    	
-    	
-    	return 
-    }
-    */
-    /*
-     * 
-     */
 }
 

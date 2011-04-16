@@ -17,7 +17,7 @@ public class StartUp {
 	//	Color white;
 		
 		
-    JFrame window = new Gui_old();
+    JFrame window = new Gui();
     
     //window.setBackground(white);
     window.setSize(500,500);
