@@ -5,10 +5,15 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.Arrays;
+
+import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 
@@ -20,8 +25,8 @@ public class FileOptions {
 	private Log4j log;
 	public static Logger logger = Logger.getRootLogger();
 
-	public FileOptions(File fromPath, File fromFilename, File toPath,
-			File toFilename) {
+	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename) 
+	{
 		
 		log = new Log4j(); 
 		logger = log.logger;
@@ -223,28 +228,27 @@ public class FileOptions {
 		}
 	}
 	
-	public String getLogFile( File logFile ) throws IOException
-	  {
-		  String output = null;
-		  
-		  FileInputStream  fis = new FileInputStream ( logFile );
-		  	  	  
-		    try
-		    {
-		      byte[] buffer = new byte[ 0xFFFF ];
-		      for ( int len; (len = fis.read(buffer)) != -1; )
-		        output = output + fis.toString(); //fos.write( buffer, 0, len );
-		      
-		    }
-		    catch( IOException e ) {
-		      System.err.println( e );
-		    }
-		    finally {
-		      if ( fis != null )
-		        try { fis.close(); } catch ( IOException e ) { e.printStackTrace(); }
-		    }
-			return output;
-	  }	 	
+//	public String getLogFile( String logFile ) throws IOException
+//	  {
+//		String output = "";
+//		Reader reader = null;
+//		
+//		try
+//		{
+//		  reader = new FileReader( logFile );
+//
+//		  for ( int c; ( c = reader.read() ) != -1; )
+//		    output = output + Character.toString((char) c);;
+//		}
+//		catch ( IOException e ) {
+//		  System.err.println( "Fehler beim Lesen der Datei!" );
+//		}
+//		finally {
+//		  try { reader.close(); } catch ( Exception e ) { }
+//		}
+//		return output;
+//	  }
+
 	
 
 

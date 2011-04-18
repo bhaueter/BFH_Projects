@@ -122,16 +122,18 @@ public class Gui extends JFrame {
 		JTextField logField = new JTextField();
 		
 		
-		
-		try {
-			logField.setText(fOpt.getLogFile(new File (log.getLogFilePath())));
+			try {
+//				logField.setText(fOpt.getLogFile(log.getLogFilePath()));
+				logField.setText(log.getLogFile());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-		//	logger.debug("LogField text insertet from LogFile");
+//			System.out.println("logfiled. setText from logField:  Text --> " +fOpt.getLogFile(log.getLogFilePath()));
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			logger.debug("LogField text insertet from LogFile");
+
 		protPanel.add(logField);
         
         protPanel.add(infoLabel);
