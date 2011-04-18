@@ -84,14 +84,47 @@ public class Gui extends JFrame {
         
         
         
+        /*
+                JScrollPane listScroller = new JScrollPane(list);
+        listScroller.setPreferredSize(new Dimension(250, 80));
+        listScroller.setAlignmentX(LEFT_ALIGNMENT);
+
+        //Create a container so that we can add a title around
+        //the scroll pane.  Can't add a title directly to the
+        //scroll pane because its background would be white.
+        //Lay out the label and scroll pane from top to bottom.
+        JPanel listPane = new JPanel();
+        listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
+        JLabel label = new JLabel(labelText);
+        label.setLabelFor(list);
+        listPane.add(label);
+        listPane.add(Box.createRigidArea(new Dimension(0,5)));
+        listPane.add(listScroller);
+        listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        */
+        
+        
+        
         //List Panel
+               
         JPanel listPanel = new JPanel();
-        listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
         JList fileList = new JList(Model);  /*getPath().list()*/
-        JScrollPane scrol = new JScrollPane(fileList);
-        scrol.getViewport().setView(fileList);
-        listPanel.add(scrol);
-        listPanel.add(infoLabel);
+        fileList.setPreferredSize(new Dimension(230,280));
+        
+        JScrollPane sp = new JScrollPane();
+        listPanel.setPreferredSize(new Dimension(235, 280));
+        listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
+        
+        listPanel.add(fileList);
+        listPanel.add(sp);
+        
+ 
+
+        
+
+   
+
+
         
         
         JPanel protPanel = new JPanel();
@@ -118,11 +151,16 @@ public class Gui extends JFrame {
         perform.add(BuStopp);
         perform.add(BuProtocol);
         
+                
+        
+      
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
         display.add(mergePanel,BorderLayout.CENTER);
-        //display.add(scrol, BorderLayout.WEST);
         display.add(perform, BorderLayout.SOUTH);
+  
+        
+        
 
 /*        //... Assemble the menu
         menubar.add(fileMenu);
