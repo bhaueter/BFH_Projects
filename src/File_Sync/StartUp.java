@@ -6,8 +6,11 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import File_Sync.gui.Gui;
+import File_Sync.synchronizer.FileOptions;
 
-public class startup {
+
+public class StartUp {
 
 	public static void main(String[] args) {
 	

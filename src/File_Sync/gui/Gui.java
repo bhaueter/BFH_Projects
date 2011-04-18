@@ -1,12 +1,17 @@
-package File_Sync;
+package File_Sync.gui;
 
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
+import org.apache.log4j.Logger;
+
+import File_Sync.StartUp;
+import File_Sync.log4j.Log4j;
+import File_Sync.synchronizer.FileOptions;
+
 import java.io.*;
-import java.util.*;
 
 //////////////////////////////////////////////////////// CountWords Test
 public class Gui extends JFrame {
@@ -22,6 +27,10 @@ public class Gui extends JFrame {
     String bs = "\\";
     
     File fromPath, fromFilename, toPath, toFilename;
+ 
+	private Log4j log;
+	public static Logger logger = Logger.getRootLogger();
+	private FileOptions fOpt;
     
     
     // Colors
@@ -31,7 +40,14 @@ public class Gui extends JFrame {
     
 
     //================================================= constructor
-    Gui() {
+    public Gui() {
+    	
+    	//Create Logger Log4j
+		log = new Log4j(); 
+		logger = log.logger;
+		
+		logger.debug("logger erstellt");
+    	
         //... Create / set component characteristics.
         fromfileNameTF.setEditable(false);
         tofileNameTF.setEditable(false);
@@ -84,51 +100,42 @@ public class Gui extends JFrame {
         
         
         
-        /*
-                JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(250, 80));
-        listScroller.setAlignmentX(LEFT_ALIGNMENT);
-
-        //Create a container so that we can add a title around
-        //the scroll pane.  Can't add a title directly to the
-        //scroll pane because its background would be white.
-        //Lay out the label and scroll pane from top to bottom.
-        JPanel listPane = new JPanel();
-        listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
-        JLabel label = new JLabel(labelText);
-        label.setLabelFor(list);
-        listPane.add(label);
-        listPane.add(Box.createRigidArea(new Dimension(0,5)));
-        listPane.add(listScroller);
-        listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        */
-        
-        
-        
         //List Panel
-               
         JPanel listPanel = new JPanel();
-        JList fileList = new JList(Model);  /*getPath().list()*/
-        fileList.setPreferredSize(new Dimension(230,280));
-        
-        JScrollPane sp = new JScrollPane();
-        listPanel.setPreferredSize(new Dimension(235, 280));
         listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
-        
-        listPanel.add(fileList);
-        listPanel.add(sp);
-        
- 
-
-        
-
-   
-
-
+        JList fileList = new JList(Model);  /*getPath().list()*/
+        JScrollPane scrol = new JScrollPane(fileList);
+        scrol.getViewport().setView(fileList);
+        listPanel.add(scrol);
+        listPanel.add(infoLabel);
         
         
         JPanel protPanel = new JPanel();
         protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
+   
+        protPanel.setLayout(new GridBagLayout());
+        protPanel.setBackground(Color.CYAN);
+        
+        
+        fOpt = new FileOptions(null, null, null, null);
+        
+		JTextField logField = new JTextField();
+		
+		
+			try {
+//				logField.setText(fOpt.getLogFile(log.getLogFilePath()));
+				logField.setText(log.getLogFile());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+//			System.out.println("logfiled. setText from logField:  Text --> " +fOpt.getLogFile(log.getLogFilePath()));
+			
+			logger.debug("LogField text insertet from LogFile");
+
+		protPanel.add(logField);
+        
         protPanel.add(infoLabel);
 
         
@@ -151,16 +158,11 @@ public class Gui extends JFrame {
         perform.add(BuStopp);
         perform.add(BuProtocol);
         
-                
-        
-      
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
         display.add(mergePanel,BorderLayout.CENTER);
+        //display.add(scrol, BorderLayout.WEST);
         display.add(perform, BorderLayout.SOUTH);
-  
-        
-        
 
 /*        //... Assemble the menu
         menubar.add(fileMenu);
@@ -208,7 +210,7 @@ public class Gui extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
             if (getFromFilename() != null && getToFilename() != null) {
             	try {
-					startup.sync(fromPath, fromFilename, toPath, toFilename);
+					StartUp.sync(fromPath, fromFilename, toPath, toFilename);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
