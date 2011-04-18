@@ -32,10 +32,7 @@ public class Gui extends JFrame {
 	public static Logger logger = Logger.getRootLogger();
 	private FileOptions fOpt;
     
-    
-    // Colors
-    Color white, black;
-    
+      
     
     
 
@@ -60,13 +57,15 @@ public class Gui extends JFrame {
         JButton BuStart	= new JButton("Start");
         JButton BuStopp	= new JButton("Stopp");
         JButton BuProtocol = new JButton("Protocol");
+ 
+        //.... Button Action Listeners
         BuFrom.addActionListener(new OpenAction());
         BuTo.addActionListener(new OpenAction());
         BuStart.addActionListener(new StartAction());
         
         
         JLabel infoLabel = new JLabel();
-        infoLabel.setPreferredSize(new Dimension(0, 280));
+        infoLabel.setPreferredSize(new Dimension(0, 260));
         
        // BuStopp.addActionListener(new StopAction());
         
@@ -76,50 +75,53 @@ public class Gui extends JFrame {
         // FromPanel
         JPanel pathFromPanel = new JPanel();
         pathFromPanel.setBorder(BorderFactory.createTitledBorder("From Destination"));
+        pathFromPanel.setBackground(Color.WHITE);
         pathFromPanel.setLayout(new BoxLayout(pathFromPanel, BoxLayout.X_AXIS)); 
         pathFromPanel.add(BuFrom);
         pathFromPanel.add(fromfileNameTF);
         
         JPanel pathToPanel = new JPanel();
         pathToPanel.setBorder(BorderFactory.createTitledBorder("To Destination"));
+        pathToPanel.setBackground(Color.WHITE);
         pathToPanel.setLayout(new BoxLayout(pathToPanel, BoxLayout.X_AXIS)); 
         pathToPanel.add(BuTo);
         pathToPanel.add(tofileNameTF);
         
         JPanel dirPanel = new JPanel();
         dirPanel.setLayout(new BoxLayout(dirPanel, BoxLayout.Y_AXIS));
-        dirPanel.setBackground(white);
+        dirPanel.setBackground(Color.WHITE);
         dirPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         dirPanel.add(pathFromPanel);
         dirPanel.add(pathToPanel);
-        dirPanel.add(infoLabel);
-        
-        
 
-        
-        
-        
+           
         
         //List Panel
         JPanel listPanel = new JPanel();
         listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
-        JList fileList = new JList(Model);  /*getPath().list()*/
-        JScrollPane scrol = new JScrollPane(fileList);
-        scrol.getViewport().setView(fileList);
-        listPanel.add(scrol);
-        listPanel.add(infoLabel);
+       // listPanel.setSize(100, 100);
+        listPanel.setBackground(Color.WHITE);
+        JList fileList = new JList(Model);
+     //   fileList.setBackground(Color.RED);
         
+        JScrollPane scrol = new JScrollPane(fileList);
+        scrol.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
+        //scrol.setSize(50, 50);
+       // listPanel.add(scrol);
+       // listPanel.add(infoLabel);
+
         
         JPanel protPanel = new JPanel();
         protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
    
         protPanel.setLayout(new GridBagLayout());
         protPanel.setBackground(Color.CYAN);
-        
+
         
         fOpt = new FileOptions(null, null, null, null);
         
 		JTextField logField = new JTextField();
+		
 		
 		
 			try {
@@ -133,23 +135,27 @@ public class Gui extends JFrame {
 //			System.out.println("logfiled. setText from logField:  Text --> " +fOpt.getLogFile(log.getLogFilePath()));
 			
 			logger.debug("LogField text insertet from LogFile");
+			
+			protPanel.add(logField);
 
-		protPanel.add(logField);
-        
-        protPanel.add(infoLabel);
 
         
         JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(1,2));
-        infoPanel.add(listPanel);
+        infoPanel.setLayout(new BoxLayout (infoPanel, BoxLayout.X_AXIS));
+        //infoPanel.setLayout(new GridLayout(1,2));
+        //infoPanel.setSize(getMaximumSize());
+        infoPanel.add(infoLabel);
+        infoPanel.add(scrol);
         infoPanel.add(protPanel);
 
+
         
+        // Merge Panel
         JPanel mergePanel = new JPanel();
         mergePanel.setLayout(new BoxLayout(mergePanel, BoxLayout.Y_AXIS));
         mergePanel.add(dirPanel);
         mergePanel.add(infoPanel);
-        listPanel.add(fileList);
+
         
         
         // Action Panel
@@ -158,10 +164,11 @@ public class Gui extends JFrame {
         perform.add(BuStopp);
         perform.add(BuProtocol);
         
+        
+        // Main Display Panel
         JPanel display = new JPanel();
         display.setLayout(new BorderLayout());
         display.add(mergePanel,BorderLayout.CENTER);
-        //display.add(scrol, BorderLayout.WEST);
         display.add(perform, BorderLayout.SOUTH);
 
 /*        //... Assemble the menu
@@ -170,7 +177,7 @@ public class Gui extends JFrame {
 */
         //... Set window characteristics
 //        this.setJMenuBar(menubar);
-        this.setContentPane(display);
+        this.getContentPane().add(display);
         this.setTitle("File Snychronization");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                      // Layout components.
