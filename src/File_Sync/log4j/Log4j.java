@@ -20,6 +20,9 @@ public class Log4j {
 
 	private String logFilePath = "logs/MeineLogDatei.log";
 	
+	/*
+	 * Log4j: Standard configs and Logging everything
+	 */
 	public Log4j()
 	{
 	    try {
@@ -38,12 +41,17 @@ public class Log4j {
 	    }
 	}
 	
+	/*
+	 * Gives the Path from Workspace to the LogFile
+	 */
 	public String getLogFilePath()
 	{
 		return logFilePath;
 	}
 	
-	
+	/*
+	 * Gives Data of the Logfile as a String
+	 */
 	public String getStringLogFile() throws IOException
 	  {
 		String output = "";
@@ -65,6 +73,9 @@ public class Log4j {
 		return output;
 	  }
 	
+	/*
+	 * Gives the LogFile as Typ of File()
+	 */
 	public File getLogFile()
 	{
 		return new File( logFilePath );

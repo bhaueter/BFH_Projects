@@ -59,7 +59,7 @@ public class Gui extends JFrame {
         BuFrom.addActionListener(new OpenAction());
         BuTo.addActionListener(new OpenAction());
         BuStart.addActionListener(new StartAction());
-        
+       
         
         JLabel infoLabel = new JLabel();
         infoLabel.setPreferredSize(new Dimension(0, 280));
