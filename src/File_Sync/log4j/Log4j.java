@@ -19,7 +19,7 @@ public class Log4j implements ActionListener{
 	
 	public static Logger logger = Logger.getRootLogger();
 	
-	private String logFilePath = "File_Sync5/src/File_Sync/logs/MeineLogDatei.log";
+	private String logFilePath = "logs/MeineLogDatei.log";
 	//Timer
 	private Timer t;
 	private boolean isStopped = false;

@@ -175,6 +175,7 @@ public class Gui extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                      // Layout components.
         this.setLocationRelativeTo(null); // Center window.
+        setVisible(true);
     }
 
 
