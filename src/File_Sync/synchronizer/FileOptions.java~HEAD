@@ -1,19 +1,36 @@
-package File_Sync;
+
+package src.File_Sync.synchronizer;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.Arrays;
 
-public class FileOptions {
+import javax.swing.Timer;
 
-	public FileOptions(File fromPath, File fromFilename, File toPath,
-			File toFilename) {
+import org.apache.log4j.Logger;
+
+
+import src.File_Sync.log4j.Log4j;
+
+public class FileOptions {
+	
+	private Log4j log;
+	public static Logger logger = Logger.getRootLogger();
+
+	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename) 
+	{
+		
+		log = new Log4j(); 
+		logger = log.logger;
+		
 		File rootfromPath = fromPath;
 		File roottoPath = toPath;
 		File rootfromFile = fromFilename;
@@ -30,6 +47,8 @@ public class FileOptions {
 				// do nothing
 			} else {
 				createDirectory(toFilename);
+				
+				logger.info("Directory created " + toFilename.getPath());
 			}
 		}
 		// File
@@ -46,6 +65,8 @@ public class FileOptions {
 			} else {
 				try {
 					copyFile(fromFilename, toFilename);
+					
+					logger.info("Copy File " + fromFilename.getName() + " to " + toFilename.getPath());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -206,12 +227,31 @@ public class FileOptions {
 			e.printStackTrace();
 		}
 	}
+	
+//	public String getLogFile( String logFile ) throws IOException
+//	  {
+//		String output = "";
+//		Reader reader = null;
+//		
+//		try
+//		{
+//		  reader = new FileReader( logFile );
+//
+//		  for ( int c; ( c = reader.read() ) != -1; )
+//		    output = output + Character.toString((char) c);;
+//		}
+//		catch ( IOException e ) {
+//		  System.err.println( "Fehler beim Lesen der Datei!" );
+//		}
+//		finally {
+//		  try { reader.close(); } catch ( Exception e ) { }
+//		}
+//		return output;
+//	  }
 
-	/*
-	 * public static void main( String[] args ) { if ( args.length != 2 )
-	 * System.err.println( "Usage: java FileCopy <src> <dest>" ); else copyFile(
-	 * args[0], args[1] ); }
-	 */
+	
+
+
 
 	public File[] getsubDirectories(File dir) {
 		File[] subDirs = dir.listFiles(new FileFilter() {

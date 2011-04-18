@@ -5,17 +5,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.Arrays;
 
-import javax.swing.Timer;
 
-import org.apache.log4j.Logger;
 
 
 import src.File_Sync.log4j.Log4j;
@@ -23,13 +18,9 @@ import src.File_Sync.log4j.Log4j;
 public class FileOptions {
 	
 	private Log4j log;
-	public static Logger logger = Logger.getRootLogger();
 
 	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename) 
 	{
-		
-		log = new Log4j(); 
-		logger = log.logger;
 		
 		File rootfromPath = fromPath;
 		File roottoPath = toPath;
@@ -48,7 +39,7 @@ public class FileOptions {
 			} else {
 				createDirectory(toFilename);
 				
-				logger.info("Directory created " + toFilename.getPath());
+				log.logger.info("Directory created " + toFilename.getPath());
 			}
 		}
 		// File
@@ -66,7 +57,7 @@ public class FileOptions {
 				try {
 					copyFile(fromFilename, toFilename);
 					
-					logger.info("Copy File " + fromFilename.getName() + " to " + toFilename.getPath());
+					log.logger.info("Copy File " + fromFilename.getName() + " to " + toFilename.getPath());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -218,8 +209,6 @@ public class FileOptions {
 	}
 
 	static void copyFile(File src, File dest) throws IOException {
-		FileInputStream in = null;
-		FileOutputStream out = null;
 
 		try {
 			copy(new FileInputStream(src), new FileOutputStream(dest));
@@ -228,29 +217,6 @@ public class FileOptions {
 		}
 	}
 	
-//	public String getLogFile( String logFile ) throws IOException
-//	  {
-//		String output = "";
-//		Reader reader = null;
-//		
-//		try
-//		{
-//		  reader = new FileReader( logFile );
-//
-//		  for ( int c; ( c = reader.read() ) != -1; )
-//		    output = output + Character.toString((char) c);;
-//		}
-//		catch ( IOException e ) {
-//		  System.err.println( "Fehler beim Lesen der Datei!" );
-//		}
-//		finally {
-//		  try { reader.close(); } catch ( Exception e ) { }
-//		}
-//		return output;
-//	  }
-
-	
-
 
 
 	public File[] getsubDirectories(File dir) {

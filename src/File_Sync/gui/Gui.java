@@ -27,26 +27,22 @@ public class Gui extends JFrame {
     String bs = "\\";
     
     File fromPath, fromFilename, toPath, toFilename;
- 
-	private Log4j log;
-	public static Logger logger = Logger.getRootLogger();
-	private FileOptions fOpt;
     
     
     // Colors
     Color white, black;
     
+    //log4j
+    private Log4j log; 
     
     
 
     //================================================= constructor
-    public Gui() {
+    public Gui(Log4j log) {
     	
-    	//Create Logger Log4j
-		log = new Log4j(); 
-		logger = log.logger;
+    	this.log = log;
 		
-		logger.debug("logger erstellt");
+		log.logger.debug("Open Gui");
     	
         //... Create / set component characteristics.
         fromfileNameTF.setEditable(false);
@@ -111,33 +107,11 @@ public class Gui extends JFrame {
         
         
         JPanel protPanel = new JPanel();
+        
+        LogPanel logPanel = new LogPanel(log);
+        protPanel = logPanel.getPanel();        
         protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
-   
-        protPanel.setLayout(new GridBagLayout());
-        protPanel.setBackground(Color.CYAN);
         
-        
-        fOpt = new FileOptions(null, null, null, null);
-        
-		JTextField logField = new JTextField();
-		
-		
-			try {
-//				logField.setText(fOpt.getLogFile(log.getLogFilePath()));
-				logField.setText(log.getLogFile());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-//			System.out.println("logfiled. setText from logField:  Text --> " +fOpt.getLogFile(log.getLogFilePath()));
-			
-			logger.debug("LogField text insertet from LogFile");
-
-		protPanel.add(logField);
-        
-        protPanel.add(infoLabel);
-
         
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(1,2));
@@ -175,7 +149,6 @@ public class Gui extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                      // Layout components.
         this.setLocationRelativeTo(null); // Center window.
-        setVisible(true);
     }
 
 
