@@ -32,6 +32,7 @@ public class Gui extends JFrame {
 	public static Logger logger = Logger.getRootLogger();
 	private FileOptions fOpt;
     
+	FileTree ft = new FileTree();
       
     
     
@@ -65,7 +66,7 @@ public class Gui extends JFrame {
         
         
         JLabel infoLabel = new JLabel();
-        infoLabel.setPreferredSize(new Dimension(0, 260));
+        infoLabel.setPreferredSize(new Dimension(750, 270));
         
        // BuStopp.addActionListener(new StopAction());
         
@@ -93,59 +94,30 @@ public class Gui extends JFrame {
         dirPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         dirPanel.add(pathFromPanel);
         dirPanel.add(pathToPanel);
-
-           
         
-        //List Panel
-        JPanel listPanel = new JPanel();
-        listPanel.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
-       // listPanel.setSize(100, 100);
-        listPanel.setBackground(Color.WHITE);
-        JList fileList = new JList(Model);
-     //   fileList.setBackground(Color.RED);
-        
+   
+        JList fileList = new JList(Model);       
         JScrollPane scrol = new JScrollPane(fileList);
         scrol.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
-        //scrol.setSize(50, 50);
-       // listPanel.add(scrol);
-       // listPanel.add(infoLabel);
 
         
         JPanel protPanel = new JPanel();
+        LogPanel logPanel = new LogPanel(log);
+        protPanel = logPanel.getPanel();
         protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
-   
+        protPanel.add(infoLabel);
         protPanel.setLayout(new GridBagLayout());
         protPanel.setBackground(Color.CYAN);
 
         
         fOpt = new FileOptions(null, null, null, null);
         
-		JTextField logField = new JTextField();
-		
-		
-		
-			try {
-//				logField.setText(fOpt.getLogFile(log.getLogFilePath()));
-				logField.setText(log.getLogFile());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-//			System.out.println("logfiled. setText from logField:  Text --> " +fOpt.getLogFile(log.getLogFilePath()));
-			
-			logger.debug("LogField text insertet from LogFile");
-			
-			protPanel.add(logField);
-
-
-        
+                
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout (infoPanel, BoxLayout.X_AXIS));
-        //infoPanel.setLayout(new GridLayout(1,2));
-        //infoPanel.setSize(getMaximumSize());
-        infoPanel.add(infoLabel);
-        infoPanel.add(scrol);
+        
+        infoPanel.add(this.ft.getTreePanel());
+        // infoPanel.add(scrol);
         infoPanel.add(protPanel);
 
 
@@ -201,6 +173,9 @@ public class Gui extends JFrame {
                 fromfileNameTF.setText(path.getAbsolutePath() +bs +file.getName());
                 setFromPath(path);
                 setFromFilename(file);
+                updateTree();
+               // FileTree tree = new FileTree(file);
+                //setFileTree(tree);
                 updateJlist();
                 }
                 else
@@ -257,6 +232,16 @@ public class Gui extends JFrame {
    }
     
     
+   public void setFileTree(FileTree obj){
+	   this.ft = obj;
+	   ft.getTreePanel();
+   }
+   
+   public void updateTree() {
+	   this.ft.updateTreeModel(getFromFilename());
+   }
+   		
+   
    
     
     public void updateJlist(){

@@ -1,12 +1,10 @@
+
 package File_Sync.log4j;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-
-import javax.swing.Timer;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -15,15 +13,16 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
 
-public class Log4j implements ActionListener{
+public class Log4j {
 	
 	public static Logger logger = Logger.getRootLogger();
 	
+
 	private String logFilePath = "logs/MeineLogDatei.log";
-	//Timer
-	private Timer t;
-	private boolean isStopped = false;
 	
+	/*
+	 * Log4j: Standard configs and Logging everything
+	 */
 	public Log4j()
 	{
 	    try {
@@ -31,8 +30,7 @@ public class Log4j implements ActionListener{
 	      ConsoleAppender consoleAppender = new ConsoleAppender( layout );
 	      logger.addAppender( consoleAppender );
 	      FileAppender fileAppender = new FileAppender( layout, logFilePath, false );
-	      logger.addAppender( fileAppender );
-	      
+	      logger.addAppender( fileAppender );	      
 	      
 	      //Login LEVEL	    
 	      logger.setLevel( Level.ALL );			// ALL | DEBUG | INFO | WARN | ERROR | FATAL | OFF:
@@ -41,18 +39,20 @@ public class Log4j implements ActionListener{
 	    {
 	    	System.out.println( ex );
 	    }
-	    //Start Timer for refresh Logfile on Gui
-		t = new Timer(500, this);
-		startWatchLogFile();
 	}
 	
+	/*
+	 * Gives the Path from Workspace to the LogFile
+	 */
 	public String getLogFilePath()
 	{
 		return logFilePath;
 	}
 	
-	
-	public String getLogFile() throws IOException
+	/*
+	 * Gives Data of the Logfile as a String
+	 */
+	public String getStringLogFile() throws IOException
 	  {
 		String output = "";
 		Reader reader = null;
@@ -73,29 +73,15 @@ public class Log4j implements ActionListener{
 		return output;
 	  }
 	
-	public void startWatchLogFile()
+	/*
+	 * Gives the LogFile as Typ of File()
+	 */
+	public File getLogFile()
 	{
-		this.t.start();
-		while(isStopped)
-		{
-			t.stop();
-		}
+		return new File( logFilePath );
 	}
-	public void stopWatchLogFile()
-	{
-		isStopped = false;
-	}	
-	
-	public void actionPerformed(ActionEvent e) {
-//		System.out.println(c++);
-		try {
-			System.out.println(getLogFile());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}	
-	
+		
+
 	    
 //	    logger.debug( "Meine Debug-Meldung" );
 //	    logger.info(  "Meine Info-Meldung"  );
