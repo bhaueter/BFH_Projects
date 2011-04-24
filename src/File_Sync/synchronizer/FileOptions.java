@@ -1,42 +1,55 @@
-
 package File_Sync.synchronizer;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.Arrays;
-
-import javax.swing.Timer;
 
 import org.apache.log4j.Logger;
 
 
+import File_Sync.gui.Gui;
 import File_Sync.log4j.Log4j;
 
-public class FileOptions {
+public class FileOptions extends Thread {
 	
 	private Log4j log;
 	public static Logger logger = Logger.getRootLogger();
 
-	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename) 
+	private File rootfromPath, roottoPath, rootfromFile, roottoName;
+	Gui gui;
+	
+	long sizeMB = 0;
+	static int  sizeIntMB = 0;
+	
+	
+	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename, Gui g) 
 	{
 		
 		log = new Log4j(); 
 		logger = log.logger;
 		
-		File rootfromPath = fromPath;
-		File roottoPath = toPath;
-		File rootfromFile = fromFilename;
-		File roottoName = toFilename;
+		rootfromPath  = fromPath;
+		rootfromFile  = fromFilename;
+		roottoPath    = toPath;
+		roottoName    = toFilename;
+		
+		this.gui = g;
+		
 	}
-
+	public void run()
+	{
+	    System.out.println("Run!!!");
+	    
+	    
+	    syncDirectory(rootfromFile, roottoName);
+	    
+	}
+	
 	public void syncDirectory(File fromFilename, File toFilename) {
 		int len;
 		String filePath = toFilename.getAbsolutePath();
@@ -63,8 +76,17 @@ public class FileOptions {
 					// copy
 				}
 			} else {
+				
+				
 				try {
-					copyFile(fromFilename, toFilename);
+					
+					//Update ProgressBar
+					sizeMB = getSize(fromFilename) / 1048576;    //1024 ^2
+					setFileSizeMB((int) sizeMB);
+					gui.setMaxProgressBar(100);//((int)sizeMB);
+				
+					
+					copyFile(fromFilename, toFilename, this.gui);
 					
 					logger.info("Copy File " + fromFilename.getName() + " to " + toFilename.getPath());
 				} catch (IOException e) {
@@ -89,12 +111,28 @@ public class FileOptions {
 
 					toFilename = new File(filePath);
 
-					syncDirectory(fileList[i], toFilename);
+					
+					System.out.println("fileList[i] "+ i + " : "+ fileList[i]);
+					
+					FileOptions sync = new FileOptions(fileList[i], fileList[i], toFilename, toFilename, this.gui);
+					sync.start();
+					
+					System.out.println("fileList[i] "+ i + " - Finish : "+ fileList[i]);
+					
+//					syncDirectory(fileList[i], toFilename);
 				}
 			}
 		}
 
+		
 	}
+	private void setFileSizeMB(int size){
+		this.sizeIntMB = size;
+	}
+	private static int getFileSizeMB(){
+		return sizeIntMB;
+	}
+	
 
 	public long getSize(File f) {
 		long len = f.length();
@@ -194,11 +232,17 @@ public class FileOptions {
 		}
 	}
 
-	static void copy(InputStream fis, OutputStream fos) {
+	static void copy(InputStream fis, OutputStream fos, Gui g) {
 		try {
-			byte[] buffer = new byte[0xFFFF];
-			for (int len; (len = fis.read(buffer)) != -1;)
-				fos.write(buffer, 0, len);
+			byte[] buffer = new byte[1048576];  // 1MB
+			int bytesRead = 0, readPercent = 0, current = 0;
+						
+			while ((bytesRead = fis.read(buffer)) != -1){
+				fos.write(buffer, 0, bytesRead);
+				current++;
+				readPercent = (current / getFileSizeMB())*100;
+				g.updateProgressBar(readPercent);
+			}
 		} catch (IOException e) {
 			System.err.println(e);
 		} finally {
@@ -217,12 +261,15 @@ public class FileOptions {
 		}
 	}
 
-	static void copyFile(File src, File dest) throws IOException {
+	static void copyFile(File src, File dest, Gui g) throws IOException {
 		FileInputStream in = null;
 		FileOutputStream out = null;
-
+		Byte[] len ;
+				
 		try {
-			copy(new FileInputStream(src), new FileOutputStream(dest));
+			
+			
+			copy(new FileInputStream(src), new FileOutputStream(dest), g);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
