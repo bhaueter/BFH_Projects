@@ -1,11 +1,15 @@
 package File_Sync.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -16,7 +20,7 @@ import File_Sync.log4j.Log4j;
 
 public class LogPanel implements ActionListener {
 	
-	private static final int INTERVALL_4_TIMER = 1000;
+	private static final int INTERVALL_4_TIMER = 10000;
 	
 	private JTextArea tf;
 	private Log4j log;
@@ -39,16 +43,19 @@ public class LogPanel implements ActionListener {
 	public JPanel getPanel() {
 		
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout());
+		panel.setLayout(new GridLayout(1,1));
 		
 		panel.setBorder(new LineBorder(Color.BLACK, 1));
 		
 		tf = new JTextArea();
 		tf.setEditable(false);
-				
+		tf.setSize(10, 10);
+		tf.setText("Das LogFile ist noch leer!");				
 		panel.add(tf);	
+
 		
 		JScrollPane scrollPane = new JScrollPane(tf);
+		scrollPane.setSize(10, 10);
 		panel.add(scrollPane);
 		
 		panel.setBackground(Color.PINK);
@@ -68,6 +75,8 @@ public class LogPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		try {
 			tf.setText(log.getStringLogFile());
+			
+			System.out.println("Timer every ("+INTERVALL_4_TIMER+") Text:\"" + log.getStringLogFile()+"\"");
 			
 		} catch (IOException e1) {
 			log.logger.error("Log4j(): Couldn't get the Text from the LogFile to show it in TextField: "+ tf.getName());

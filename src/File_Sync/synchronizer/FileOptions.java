@@ -11,46 +11,50 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
-
 import File_Sync.gui.Gui;
 import File_Sync.log4j.Log4j;
 
 public class FileOptions extends Thread {
-	
-	private Log4j log;
-	public static Logger logger = Logger.getRootLogger();
+	public static Logger log;
 
 	private File rootfromPath, roottoPath, rootfromFile, roottoName;
+	private static int cntFile = 0;
 	Gui gui;
-	
+
 	long sizeMB = 0;
-	static int  sizeIntMB = 0;
-	
-	
-	public FileOptions(File fromPath, File fromFilename, File toPath, File toFilename, Gui g) 
-	{
+	static int sizeIntMB = 0, actualMB = 0;
+
+	public FileOptions(File fromPath, File fromFilename, File toPath,
+			File toFilename, Gui g) {
 		
-		log = new Log4j(); 
-		logger = log.logger;
-		
-		rootfromPath  = fromPath;
-		rootfromFile  = fromFilename;
-		roottoPath    = toPath;
-		roottoName    = toFilename;
-		
+		log = g.logger; 
+
+		rootfromPath = fromPath;
+		rootfromFile = fromFilename;
+		roottoPath = toPath;
+		roottoName = toFilename;
+
 		this.gui = g;
-		
+
 	}
-	public void run()
-	{
+
+	public void run() {
 	    System.out.println("Run!!!");
 	    
-	    
-	    syncDirectory(rootfromFile, roottoName);
-	    
-	}
 	
+	    syncDirectory(rootfromFile, roottoName);
+
+	}
+
 	public void syncDirectory(File fromFilename, File toFilename) {
+		
+		if (gui.getIsStopped())
+		{
+			return;
+		}
+		else
+		{
+		
 		int len;
 		String filePath = toFilename.getAbsolutePath();
 		File[] fileList;
@@ -60,8 +64,7 @@ public class FileOptions extends Thread {
 				// do nothing
 			} else {
 				createDirectory(toFilename);
-				
-				logger.info("Directory created " + toFilename.getPath());
+				log.info("Directory created " + toFilename.getPath());
 			}
 		}
 		// File
@@ -71,27 +74,53 @@ public class FileOptions extends Thread {
 				if (isSameSize(fromFilename, toFilename) == true) {
 					// do nothing
 				} else {
+					try {
 					// delete existing
-
-					// copy
-				}
-			} else {
-				
-				
-				try {
+					toFilename.delete();
+					log.info("Directory must be deleted " + toFilename.getPath());
 					
-					//Update ProgressBar
-					sizeMB = getSize(fromFilename) / 1048576;    //1024 ^2
+					// copy
+					
+					// Update ProgressBar
+					sizeMB = getSize(fromFilename) / 1048576; // 1024 ^2
 					setFileSizeMB((int) sizeMB);
-					gui.setMaxProgressBar(100);//((int)sizeMB);
-				
+					gui.setMaxProgressBar(100);// ((int)sizeMB);
+					
+					setFileAmount();
 					
 					copyFile(fromFilename, toFilename, this.gui);
 					
-					logger.info("Copy File " + fromFilename.getName() + " to " + toFilename.getPath());
+					log.info("File copied -");
+					log.info("From: " + fromFilename.getPath());
+					log.info("To:   " + toFilename.getPath());
+					
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.error("Error: File couldn't copied!");
+					log.error("From: " + fromFilename.getPath());
+					log.error("To:   " + toFilename.getPath());
+				}
+				}
+			} else {
+
+				try {
+
+					// Update ProgressBar
+					sizeMB = getSize(fromFilename) / 1048576; // 1024 ^2
+					setFileSizeMB((int) sizeMB);
+					gui.setMaxProgressBar(100);// ((int)sizeMB);
+
+					setFileAmount();
+					
+					copyFile(fromFilename, toFilename, this.gui);
+					
+					log.info("File copied -");
+					log.info("From: " + fromFilename.getPath());
+					log.info("To:   " + toFilename.getPath());
+					
+				} catch (IOException e) {
+					log.error("Error: File couldn't copied!");
+					log.error("From: " + fromFilename.getPath());
+					log.error("To:   " + toFilename.getPath());
 				}
 			}
 		}
@@ -111,28 +140,41 @@ public class FileOptions extends Thread {
 
 					toFilename = new File(filePath);
 
-					
-					System.out.println("fileList[i] "+ i + " : "+ fileList[i]);
+//					log.info("fileList[i] "+ i + " : "+ fileList[i]);
 					
 					FileOptions sync = new FileOptions(fileList[i], fileList[i], toFilename, toFilename, this.gui);
 					sync.start();
 					
-					System.out.println("fileList[i] "+ i + " - Finish : "+ fileList[i]);
+//					log.info("fileList[i] "+ i + " - Finish : "+ fileList[i]);
 					
 //					syncDirectory(fileList[i], toFilename);
 				}
 			}
 		}
-
-		
+		}
 	}
-	private void setFileSizeMB(int size){
-		this.sizeIntMB = size;
+	private void setFileAmount(){
+		cntFile++;
 	}
-	private static int getFileSizeMB(){
-		return sizeIntMB;
+	private static int getFileAmount(){
+		return cntFile;
+	}
+	private static void setCopiedMB(){
+		actualMB++;
+	}
+	private static int getCopiedMB(){
+		return actualMB;
 	}
 	
+	
+	
+	private void setFileSizeMB(int size) {
+		this.sizeIntMB += size;
+	}
+
+	private static int getFileSizeMB() {
+		return sizeIntMB;
+	}
 
 	public long getSize(File f) {
 		long len = f.length();
@@ -157,7 +199,7 @@ public class FileOptions extends Thread {
 	public boolean isFile(File f) {
 		try {
 			// Check if its a directory and if it exists
-			boolean success = (f.isFile());  // && f.exists()
+			boolean success = (f.isFile()); // && f.exists()
 			if (success)
 				return true;
 			else
@@ -174,7 +216,7 @@ public class FileOptions extends Thread {
 	public boolean isDirectory(File f) {
 		try {
 			// Check if its a directory and if it exists
-			boolean success = (f.isDirectory());  // && f.exists()
+			boolean success = (f.isDirectory()); // && f.exists()
 			if (success)
 				return true;
 			else
@@ -234,13 +276,19 @@ public class FileOptions extends Thread {
 
 	static void copy(InputStream fis, OutputStream fos, Gui g) {
 		try {
-			byte[] buffer = new byte[1048576];  // 1MB
-			int bytesRead = 0, readPercent = 0, current = 0;
-						
-			while ((bytesRead = fis.read(buffer)) != -1){
+			byte[] buffer = new byte[1048576]; // 1MB
+			int bytesRead = 0, readPercent = 0, actual = 0, current = 0;
+			Float percent;
+
+			while ((bytesRead = fis.read(buffer)) != -1) {
 				fos.write(buffer, 0, bytesRead);
-				current++;
-				readPercent = (current / getFileSizeMB())*100;
+				
+				setCopiedMB();
+
+				percent = (float) getCopiedMB() / getFileSizeMB();
+				percent *= 100;
+				readPercent = Math.round(percent);
+				
 				g.updateProgressBar(readPercent);
 			}
 		} catch (IOException e) {
@@ -264,41 +312,15 @@ public class FileOptions extends Thread {
 	static void copyFile(File src, File dest, Gui g) throws IOException {
 		FileInputStream in = null;
 		FileOutputStream out = null;
-		Byte[] len ;
-				
+		Byte[] len;
+
 		try {
-			
-			
 			copy(new FileInputStream(src), new FileOutputStream(dest), g);
-		} catch (IOException e) {
+			}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-//	public String getLogFile( String logFile ) throws IOException
-//	  {
-//		String output = "";
-//		Reader reader = null;
-//		
-//		try
-//		{
-//		  reader = new FileReader( logFile );
-//
-//		  for ( int c; ( c = reader.read() ) != -1; )
-//		    output = output + Character.toString((char) c);;
-//		}
-//		catch ( IOException e ) {
-//		  System.err.println( "Fehler beim Lesen der Datei!" );
-//		}
-//		finally {
-//		  try { reader.close(); } catch ( Exception e ) { }
-//		}
-//		return output;
-//	  }
-
-	
-
-
 
 	public File[] getsubDirectories(File dir) {
 		File[] subDirs = dir.listFiles(new FileFilter() {
@@ -310,7 +332,6 @@ public class FileOptions extends Thread {
 
 		System.out.println(Arrays.asList(subDirs));
 		return subDirs;
-
 	}
 
 }

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,10 @@ public class Gui extends JFrame {
 	JProgressBar pb = new JProgressBar();
 
 	FileTree ft = new FileTree(this);
+	
+
+	 boolean isStopped = false;
+
 
 	// ================================================= constructor
 	public Gui(Log4j log) {
@@ -42,6 +47,7 @@ public class Gui extends JFrame {
 		this.log = log;
 
 		log.logger.debug("Open Gui");
+		log.logger.info("SSP: 1.Messageeee");
 
 		// ... Create / set component characteristics.
 		fromfileNameTF.setEditable(false);
@@ -50,19 +56,16 @@ public class Gui extends JFrame {
 
 		// ... Create elements Add listeners
 		JButton BuFrom = new JButton("Path From");
-
 		JButton BuTo = new JButton("Path To");
+		
 		JButton BuStart = new JButton("Start");
 		JButton BuStopp = new JButton("Stopp");
-		JButton BuProtocol = new JButton("Protocol");
 
 		// .... Button Action Listeners
 		BuFrom.addActionListener(new OpenAction());
 		BuTo.addActionListener(new OpenAction());
 		BuStart.addActionListener(new StartAction());
-
-		JLabel infoLabel = new JLabel();
-		infoLabel.setPreferredSize(new Dimension(750, 270));
+		BuStopp.addActionListener(new StoppAction());
 
 		// BuStopp.addActionListener(new StopAction());
 
@@ -100,11 +103,10 @@ public class Gui extends JFrame {
 		JPanel protPanel = new JPanel();
 		LogPanel logPanel = new LogPanel(log);
 		protPanel = logPanel.getPanel();
-		protPanel.setBorder(BorderFactory
-				.createTitledBorder("Infos & Protocol"));
-		protPanel.add(infoLabel);
-		protPanel.setLayout(new GridBagLayout());
+		protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
 		protPanel.setBackground(Color.CYAN);
+		protPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+//		protPanel.setPreferredSize(new Dimension(400, 200));
 
 		fOpt = new FileOptions(null, null, null, null, this);
 
@@ -112,7 +114,8 @@ public class Gui extends JFrame {
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
 
 		infoPanel.add(this.ft.getTreePanel());
-		infoPanel.add(protPanel);
+//		infoPanel.add(protPanel);
+		//infoPanel.add(protPanel);
 
 		// Progress Bar Panel
 		JPanel progressPanel = new JPanel();
@@ -137,13 +140,13 @@ public class Gui extends JFrame {
 		actionPanel.setBackground(Color.WHITE);
 		actionPanel.add(BuStart);
 		actionPanel.add(BuStopp);
-		actionPanel.add(BuProtocol);
 
 		// Main Display Panel
 		JPanel display = new JPanel();
 		display.setLayout(new BorderLayout());
 		display.add(mergePanel, BorderLayout.CENTER);
 		display.add(actionPanel, BorderLayout.SOUTH);
+		display.add(protPanel, BorderLayout.EAST);
 
 		/*
 		 * //... Assemble the menu menubar.add(fileMenu);
@@ -202,8 +205,25 @@ public class Gui extends JFrame {
 				}
 			}
 		}
-
 	}
+	
+	// StoppAction
+	class StoppAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			   isStopped = true; 
+			   logger.info("Stop is clicked!");
+				}
+			}
+
+	 public boolean getIsStopped() {
+	  return isStopped;
+	 }
+	 
+	 public void setIsStopped ( boolean status)
+	 {
+	  isStopped = status;
+	 }
+		
 
 	public void setFromPath(File p) {
 		fromPath = p;
@@ -266,7 +286,7 @@ public class Gui extends JFrame {
 		this.pb.setValue(0);
 		this.pb.setMaximum(max);
 	}
-
+	
 	public void updateProgressBar(int val) {
 		this.pb.setValue(val);
 	}
