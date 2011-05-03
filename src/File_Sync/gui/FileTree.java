@@ -16,6 +16,12 @@ public class FileTree implements MouseListener {
 
 	private JScrollPane scrollpane;
 
+	// Initial Tree Constructur -> No from path on gui selected
+	FileTree(Gui gui) {
+		this(new File(System.getProperty("user.home")), gui);
+	}
+	
+	// Consturctor with from file
 	FileTree(File root, Gui g) {
 
 		// Create a TreeModel object to represent our directory tree of files and folders
@@ -33,12 +39,6 @@ public class FileTree implements MouseListener {
 		JScrollPane sp = new JScrollPane(tree);
 		sp.setBorder(BorderFactory.createTitledBorder("Selected Dirs & Files"));
 		setTreePanel(sp);
-
-	}
-
-	FileTree(Gui gui) {
-
-		this(new File(System.getProperty("user.home")), gui);
 	}
 
 	public void setTreePanel(JScrollPane pane) {
@@ -54,11 +54,10 @@ public class FileTree implements MouseListener {
 		tree.setModel(model);
 	}
 
-
+// Update gui from path --> path has changed via tree doubleclick
 	private void setSelectedFile(File f) {
 		this.selectedFile = f;
 		gui.updatePath(f);
-		
 	}
 
 	public File getSelectedFile() {

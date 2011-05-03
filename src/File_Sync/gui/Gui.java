@@ -17,30 +17,32 @@ import java.io.*;
 public class Gui extends JFrame {
 
 	// Variable Definition
-
+	//-----------------------------------------------------------------------
+	
+	// Constants
+	private static String bs = "\\";
+	
 	// Gui Elements
 	JTextField fromfileNameTF = new JTextField(30);
 	JTextField tofileNameTF = new JTextField(30);
 	JFileChooser fileChooser = new JFileChooser();
+	JProgressBar pb = new JProgressBar();
+	FileTree ft = new FileTree(this);
+		
+	// File Variables
+	private File fromPath, fromFilename, toPath, toFilename;
 
-	final DefaultListModel Model = new DefaultListModel();
-	String bs = "\\";
-
-	File fromPath, fromFilename, toPath, toFilename;
-
+	// Log Elements
 	private Log4j log;
 	public static Logger logger = Logger.getRootLogger();
-	private FileOptions fOpt;
-
-	JProgressBar pb = new JProgressBar();
-
-	FileTree ft = new FileTree(this);
 	
-
-	 boolean isStopped = false;
-
-
-	// ================================================= constructor
+	// Status Elements
+	boolean isStopped = false;
+	//-----------------------------------------------------------------------
+	
+	
+	
+	// Gui Constructor
 	public Gui(Log4j log) {
 
 		// Log4j
@@ -49,27 +51,24 @@ public class Gui extends JFrame {
 		log.logger.debug("Open Gui");
 		log.logger.info("SSP: 1.Messageeee");
 
-		// ... Create / set component characteristics.
+		// Create / set component characteristics.
 		fromfileNameTF.setEditable(false);
 		tofileNameTF.setEditable(false);
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		// ... Create elements Add listeners
+		// Create Buttons
 		JButton BuFrom = new JButton("Path From");
 		JButton BuTo = new JButton("Path To");
-		
 		JButton BuStart = new JButton("Start");
 		JButton BuStopp = new JButton("Stopp");
 
-		// .... Button Action Listeners
+		// Button Action Listeners
 		BuFrom.addActionListener(new OpenAction());
 		BuTo.addActionListener(new OpenAction());
 		BuStart.addActionListener(new StartAction());
 		BuStopp.addActionListener(new StoppAction());
 
-		// BuStopp.addActionListener(new StopAction());
-
-		// ... Create content pane, layout components
+		// Create content pane, layout components
 
 		// FromPanel
 		JPanel pathFromPanel = new JPanel();
@@ -95,27 +94,17 @@ public class Gui extends JFrame {
 		dirPanel.add(pathFromPanel);
 		dirPanel.add(pathToPanel);
 
-		JList fileList = new JList(Model);
-		JScrollPane scrol = new JScrollPane(fileList);
-		scrol.setBorder(BorderFactory
-				.createTitledBorder("Selected Dirs & Files"));
-
-		JPanel protPanel = new JPanel();
 		LogPanel logPanel = new LogPanel(log);
+		JScrollPane protPanel = new JScrollPane();
 		protPanel = logPanel.getPanel();
-		protPanel.setBorder(BorderFactory.createTitledBorder("Infos & Protocol"));
-		protPanel.setBackground(Color.CYAN);
 		protPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-//		protPanel.setPreferredSize(new Dimension(400, 200));
 
-		fOpt = new FileOptions(null, null, null, null, this);
 
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
-
 		infoPanel.add(this.ft.getTreePanel());
-//		infoPanel.add(protPanel);
-		//infoPanel.add(protPanel);
+		infoPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+
 
 		// Progress Bar Panel
 		JPanel progressPanel = new JPanel();
@@ -138,6 +127,7 @@ public class Gui extends JFrame {
 		JPanel actionPanel = new JPanel();
 		actionPanel.setBorder(BorderFactory.createTitledBorder("Action"));
 		actionPanel.setBackground(Color.WHITE);
+		actionPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		actionPanel.add(BuStart);
 		actionPanel.add(BuStopp);
 
@@ -148,12 +138,7 @@ public class Gui extends JFrame {
 		display.add(actionPanel, BorderLayout.SOUTH);
 		display.add(protPanel, BorderLayout.EAST);
 
-		/*
-		 * //... Assemble the menu menubar.add(fileMenu);
-		 * fileMenu.add(openItem);
-		 */
-		// ... Set window characteristics
-		// this.setJMenuBar(menubar);
+
 		this.getContentPane().add(display);
 		this.setTitle("File Snychronization");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -164,7 +149,7 @@ public class Gui extends JFrame {
 	// OpenAction
 	class OpenAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			// ... Open a file dialog.
+			// Open a file dialog.
 			int retval = fileChooser.showOpenDialog(Gui.this);
 			JButton BuTmp = (JButton) ae.getSource();
 
@@ -179,51 +164,52 @@ public class Gui extends JFrame {
 					setFromPath(path);
 					setFromFilename(file);
 					updateTree();
-					// FileTree tree = new FileTree(file);
-					// setFileTree(tree);
-					updateJlist();
-				} else
+				}
+				else{
 					tofileNameTF.setText(path.getAbsolutePath() + bs
 							+ file.getName());
-				setToPath(path);
-				setToFilename(file);
+					setToPath(path);
+					setToFilename(file);
+					}
 			}
 		}
-
 	}
 
 	// StartAction
 	class StartAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			if (getFromFilename() != null && getToFilename() != null) {
+			if (getFromFilename() != null && getToFilename() != null
+				&& getFromFilename() != getToFilename()) {
 				try {
+					isStopped = false;
 					StartUp.sync(fromPath, fromFilename, toPath, toFilename,
 							Gui.this);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else {
+				logger.warn("Missing path or equal path!");
 			}
 		}
 	}
-	
+
 	// StoppAction
 	class StoppAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			   isStopped = true; 
-			   logger.info("Stop is clicked!");
-				}
-			}
+	
+			isStopped = true;
+			logger.info("Stop is clicked!");
+		}
+	}
 
-	 public boolean getIsStopped() {
-	  return isStopped;
-	 }
-	 
-	 public void setIsStopped ( boolean status)
-	 {
-	  isStopped = status;
-	 }
-		
+	public boolean getIsStopped() {
+		return isStopped;
+	}
+
+	public void setIsStopped(boolean status) {
+		isStopped = status;
+	}
 
 	public void setFromPath(File p) {
 		fromPath = p;
@@ -270,25 +256,20 @@ public class Gui extends JFrame {
 		fromfileNameTF.setText(f.getAbsolutePath() + bs + f.getName());
 		setFromFilename(f);
 		updateTree();
-
 	}
 
-	public void updateJlist() {
-		File f = getFromPath();
-		String[] elements = f.list();
-
-		for (int i = 0; i < elements.length; i++) {
-			Model.addElement(elements[i]);
-		}
-	}
 
 	public void setMaxProgressBar(int max) {
 		this.pb.setValue(0);
 		this.pb.setMaximum(max);
 	}
-	
+
 	public void updateProgressBar(int val) {
 		this.pb.setValue(val);
+	}
+
+	public void wirteLogMsg(String str) {
+		logger.info(str);
 	}
 
 }

@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import File_Sync.gui.Gui;
 import File_Sync.log4j.Log4j;
 import File_Sync.synchronizer.FileOptions;
+import File_Sync.synchronizer.SyncFile;
 
 public class StartUp {
 	
@@ -21,7 +22,7 @@ public class StartUp {
 		JFrame window = new Gui(log);
 
 		// window.setBackground(white);
-		window.setSize(500, 500);
+		window.setSize(800, 500);
 		window.setVisible(true);
 
 	}
@@ -29,11 +30,9 @@ public class StartUp {
 	public static void sync(File fromPath, File fromFilename, File toPath,
 			File toFilename, Gui g) throws IOException {
 
-		FileOptions sync = new FileOptions(fromPath, fromFilename, toPath,
-				toFilename, g );
-		sync.start();
-
-		// sync.syncDirectory(fromFilename, toFilename);
+		FileOptions tp = new FileOptions( g );
+				
+		tp.runTask(new SyncFile(fromPath, fromFilename, toPath,toFilename, g, tp ));
 
 	}
 

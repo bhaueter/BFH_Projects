@@ -21,7 +21,7 @@ public class Log4j {
 	private String logFilePath = "logs/MeineLogDatei.log";
 	
 	/*
-	 * Log4j: Standard configs and Logging everything
+	 * Log4j: Standard config and logging everything
 	 */
 	public Log4j()
 	{
