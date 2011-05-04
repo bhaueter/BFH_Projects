@@ -1,17 +1,22 @@
-package File_Sync.synchronizer;
+package src.File_Sync.synchronizer;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
-import File_Sync.gui.Gui;
+import src.File_Sync.exceptions.CloseFileEx;
+import src.File_Sync.exceptions.CopyFileEx;
+import src.File_Sync.exceptions.FileOptionEx;
+import src.File_Sync.exceptions.InvalidInputOutputStreamEx;
+import src.File_Sync.exceptions.TestExceptionEx;
+import src.File_Sync.gui.Gui;
 
 public class SyncFile implements Runnable {
 
@@ -35,12 +40,16 @@ public class SyncFile implements Runnable {
 		this.gui = g;
 	}
 	
-	public void run() {
-		syncDirectory(rootfromFile, roottoName);
+	public void run(){
+		try {
+			syncDirectory(rootfromFile, roottoName);
+		} catch (FileOptionEx e) {
+			log.error("Method run() in SyncFile " + e.getMessage());
+		}
 	}
 	
 	
-	public void syncDirectory(File fromFilename, File toFilename) {
+	public void syncDirectory(File fromFilename, File toFilename) throws FileOptionEx {
 
 		int len;
 		String filePath = toFilename.getAbsolutePath();
@@ -49,6 +58,10 @@ public class SyncFile implements Runnable {
 		if (isDirectory(fromFilename) == true) {
 			if (isExist(toFilename) == true) {
 				// do nothing
+				
+				//test if exception comes up
+				//throw new TestExceptionEx();
+				
 			} else {
 				createDirectory(toFilename);
 				log.info("Directory created " + toFilename.getPath());
@@ -82,8 +95,13 @@ public class SyncFile implements Runnable {
 						log.info("From: " + fromFilename.getPath());
 						log.info("To:   " + toFilename.getPath());
 
-					} catch (IOException e) {
-						log.error("Error: File couldn't copied!");
+					} catch (FileOptionEx e) {
+						log.error("Error in Method copyFile(): File couldn't copied!");
+						log.error("From: " + fromFilename.getPath());
+						log.error("To:   " + toFilename.getPath());
+					} 
+					catch (IOException e) {
+						log.error("Error: File couldn't copied in Method syncDirectory()!");
 						log.error("From: " + fromFilename.getPath());
 						log.error("To:   " + toFilename.getPath());
 					}
@@ -105,8 +123,13 @@ public class SyncFile implements Runnable {
 					log.info("From: " + fromFilename.getPath());
 					log.info("To:   " + toFilename.getPath());
 
-				} catch (IOException e) {
-					log.error("Error: File couldn't copied!");
+				} catch (FileOptionEx e) {
+					log.error("Error in Method copyFile(): File couldn't copied!");
+					log.error("From: " + fromFilename.getPath());
+					log.error("To:   " + toFilename.getPath());
+				} 
+				catch (IOException e) {
+					log.error("Error: File couldn't copied in Method syncDirectory()!");
 					log.error("From: " + fromFilename.getPath());
 					log.error("To:   " + toFilename.getPath());
 				}
@@ -129,7 +152,7 @@ public class SyncFile implements Runnable {
 
 					toFilename = new File(filePath);
 
-					 threadPool.runTask(new SyncFile(fileList[i],fileList[i], toFilename, toFilename, this.gui, this.threadPool));
+					threadPool.runTask(new SyncFile(fileList[i],fileList[i], toFilename, toFilename, this.gui, this.threadPool));
 
 				}
 			}
@@ -189,7 +212,7 @@ public class SyncFile implements Runnable {
 			else
 				return false;
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			log.error("Method isFile " + e.getMessage());
 			return false;
 		}
 	}
@@ -206,7 +229,7 @@ public class SyncFile implements Runnable {
 			else
 				return false;
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			log.error("Method isDirectory " + e.getMessage());
 			return false;
 		}
 	}
@@ -223,7 +246,7 @@ public class SyncFile implements Runnable {
 			else
 				return false;
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			log.error("Method isExist " + e.getMessage());
 			return false;
 		}
 	}
@@ -236,10 +259,10 @@ public class SyncFile implements Runnable {
 			// Create one directory
 			boolean success = f.mkdir();
 			if (success) {
-				System.out.println("Directory: " + f.getPath() + " created");
+				log.info("Directory: " + f.getPath() + " created");
 			}
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			log.error("Method createDirectory " + e.getMessage());
 		}
 	}
 
@@ -251,14 +274,14 @@ public class SyncFile implements Runnable {
 			// Create multiple directories
 			boolean success = f.mkdirs();
 			if (success) {
-				System.out.println("Directories: " + f.getPath() + " created");
+				log.info("Directories: " + f.getPath() + " created");
 			}
 		} catch (Exception e) {// Catch exception if any
-			System.err.println("Error: " + e.getMessage());
+			log.error("Method createDirectories " + e.getMessage());
 		}
 	}
 
-	static void copy(InputStream fis, OutputStream fos, Gui g) {
+	static void copy(InputStream fis, OutputStream fos, Gui g)  throws FileOptionEx{
 		try {
 			byte[] buffer = new byte[1048576]; // 1MB
 			int bytesRead = 0, readPercent = 0, actual = 0, current = 0;
@@ -276,32 +299,36 @@ public class SyncFile implements Runnable {
 				g.updateProgressBar(readPercent);
 			}
 		} catch (IOException e) {
-			System.err.println(e);
+			log.error("Couldn't copy File in Method copy() " + e.getMessage());
+			throw new InvalidInputOutputStreamEx();
 		} finally {
 			if (fis != null)
 				try {
 					fis.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.error("Couldn't copy File in Method copy() - fis.close(): " + e.getMessage());
+					throw new CloseFileEx();
 				}
 			if (fos != null)
 				try {
 					fos.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.error("Couldn't copy File in Method copy() - fos.close(): " + e.getMessage());
+					throw new CloseFileEx();
 				}
 		}
 	}
 
-	static void copyFile(File src, File dest, Gui g) throws IOException {
+	static void copyFile(File src, File dest, Gui g) throws FileOptionEx, FileNotFoundException {
 		FileInputStream in = null;
 		FileOutputStream out = null;
 		Byte[] len;
 
 		try {
 			copy(new FileInputStream(src), new FileOutputStream(dest), g);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (InvalidInputOutputStreamEx e) {
+			log.error("Method copyFile " + e.getMessage());
+			throw new CopyFileEx();
 		}
 	}
 
@@ -312,8 +339,6 @@ public class SyncFile implements Runnable {
 				return d.isDirectory();
 			}
 		});
-
-		System.out.println(Arrays.asList(subDirs));
 		return subDirs;
 	}
 

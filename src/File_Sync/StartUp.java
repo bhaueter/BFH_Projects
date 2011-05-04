@@ -1,15 +1,15 @@
-package File_Sync;
+package src.File_Sync;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import File_Sync.gui.Gui;
-import File_Sync.log4j.Log4j;
-import File_Sync.synchronizer.FileOptions;
-import File_Sync.synchronizer.SyncFile;
+import src.File_Sync.exceptions.FileOptionEx;
+import src.File_Sync.gui.Gui;
+import src.File_Sync.log4j.Log4j;
+import src.File_Sync.synchronizer.FileOptions;
+import src.File_Sync.synchronizer.SyncFile;
 
 public class StartUp {
 	
@@ -17,7 +17,7 @@ public class StartUp {
 
 		// Color white;
 
-		Log4j log = new Log4j();
+		Log4j log = new Log4j(false);
 
 		JFrame window = new Gui(log);
 
@@ -28,7 +28,7 @@ public class StartUp {
 	}
 
 	public static void sync(File fromPath, File fromFilename, File toPath,
-			File toFilename, Gui g) throws IOException {
+			File toFilename, Gui g) throws FileOptionEx  {
 
 		FileOptions tp = new FileOptions( g );
 				

@@ -1,12 +1,15 @@
-package File_Sync.gui;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
+package src.File_Sync.gui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+
+import javax.swing.BorderFactory;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 public class FileTree implements MouseListener {
 

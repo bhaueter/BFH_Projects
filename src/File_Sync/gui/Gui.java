@@ -1,18 +1,28 @@
-package File_Sync.gui;
+package src.File_Sync.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
-import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
-import File_Sync.StartUp;
-import File_Sync.log4j.Log4j;
-import File_Sync.synchronizer.FileOptions;
-
-import java.io.*;
+import src.File_Sync.StartUp;
+import src.File_Sync.exceptions.FileOptionEx;
+import src.File_Sync.log4j.Log4j;
 
 public class Gui extends JFrame {
 
@@ -49,7 +59,6 @@ public class Gui extends JFrame {
 		this.log = log;
 
 		log.logger.debug("Open Gui");
-		log.logger.info("SSP: 1.Messageeee");
 
 		// Create / set component characteristics.
 		fromfileNameTF.setEditable(false);
@@ -61,12 +70,14 @@ public class Gui extends JFrame {
 		JButton BuTo = new JButton("Path To");
 		JButton BuStart = new JButton("Start");
 		JButton BuStopp = new JButton("Stopp");
+		JButton BuClose = new JButton("Close");
 
 		// Button Action Listeners
 		BuFrom.addActionListener(new OpenAction());
 		BuTo.addActionListener(new OpenAction());
 		BuStart.addActionListener(new StartAction());
 		BuStopp.addActionListener(new StoppAction());
+		BuClose.addActionListener(new CloseAction());
 
 		// Create content pane, layout components
 
@@ -130,6 +141,7 @@ public class Gui extends JFrame {
 		actionPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		actionPanel.add(BuStart);
 		actionPanel.add(BuStopp);
+		actionPanel.add(BuClose);
 
 		// Main Display Panel
 		JPanel display = new JPanel();
@@ -180,14 +192,15 @@ public class Gui extends JFrame {
 		public void actionPerformed(ActionEvent ae) {
 			if (getFromFilename() != null && getToFilename() != null
 				&& getFromFilename() != getToFilename()) {
-				try {
+
 					isStopped = false;
-					StartUp.sync(fromPath, fromFilename, toPath, toFilename,
-							Gui.this);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					try {
+						StartUp.sync(fromPath, fromFilename, toPath, toFilename, Gui.this);
+					} catch (FileOptionEx e) {
+						 logger.error("Error while synchronizing ..");
+						 JOptionPane.showMessageDialog(null, "Error while synchronization");
+					}
+
 			} else {
 				logger.warn("Missing path or equal path!");
 			}
@@ -201,6 +214,15 @@ public class Gui extends JFrame {
 			isStopped = true;
 			logger.info("Stop is clicked!");
 		}
+	}
+	
+	//CloseAction
+	class CloseAction implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			//Close Window --> Stop everything
+			System.exit(0);
+		}
+
 	}
 
 	public boolean getIsStopped() {

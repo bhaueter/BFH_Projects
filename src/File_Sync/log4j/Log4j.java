@@ -1,5 +1,5 @@
 
-package File_Sync.log4j;
+package src.File_Sync.log4j;
 
 import java.io.File;
 import java.io.FileReader;
@@ -22,14 +22,15 @@ public class Log4j {
 	
 	/*
 	 * Log4j: Standard config and logging everything
+	 * @param1: truncate: true = Logfile vorgängig nicht löschen, false: neues Logfile erstellen
 	 */
-	public Log4j()
+	public Log4j(boolean truncate)
 	{
 	    try {
 	      SimpleLayout layout = new SimpleLayout();
 	      ConsoleAppender consoleAppender = new ConsoleAppender( layout );
 	      logger.addAppender( consoleAppender );
-	      FileAppender fileAppender = new FileAppender( layout, logFilePath, false );
+	      FileAppender fileAppender = new FileAppender( layout, logFilePath, truncate );
 	      logger.addAppender( fileAppender );	      
 	      
 	      //Login LEVEL	    
@@ -40,6 +41,7 @@ public class Log4j {
 	    	System.out.println( ex );
 	    }
 	}
+
 	
 	/*
 	 * Gives the Path from Workspace to the LogFile
@@ -65,7 +67,7 @@ public class Log4j {
 		    output = output + Character.toString((char) c);;
 		}
 		catch ( IOException e ) {
-		  System.err.println( "Fehler beim Lesen der Datei!" );
+		  logger.error( "Log4J(): Fehler beim Lesen der Datei!" );
 		}
 		finally {
 		  try { reader.close(); } catch ( Exception e ) { }

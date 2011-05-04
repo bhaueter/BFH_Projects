@@ -1,4 +1,4 @@
-package File_Sync.synchronizer;
+package src.File_Sync.synchronizer;
 
 import java.io.File;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import File_Sync.gui.Gui;
+import src.File_Sync.exceptions.FileOptionEx;
+import src.File_Sync.gui.Gui;
 
 public class FileOptions  {
 	
@@ -38,11 +39,10 @@ public class FileOptions  {
 		this.gui = g;
 	}
 
-	public void runTask(Runnable task) {
+	public void runTask(Runnable task) throws FileOptionEx {
 		if(this.gui.getIsStopped() == true) stopTask();
 		else{
-	    threadPool.execute(task);
-		System.out.println("Task count.." + queue.size());
+		threadPool.execute(task);
 		}
 	}
 	

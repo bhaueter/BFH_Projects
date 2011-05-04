@@ -1,24 +1,16 @@
-package File_Sync.gui;
+package src.File_Sync.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
-import javax.swing.border.LineBorder;
 
-import File_Sync.log4j.Log4j;
+import src.File_Sync.log4j.Log4j;
 
 public class LogPanel implements ActionListener {
 	
@@ -68,7 +60,7 @@ public class LogPanel implements ActionListener {
 		try {
 			tf.setText(log.getStringLogFile());
 			
-			System.out.println("Timer every ("+INTERVALL_4_TIMER+") Text:\"" + log.getStringLogFile()+"\"");
+//			System.out.println("Timer every ("+INTERVALL_4_TIMER+") Text:\"" + log.getStringLogFile()+"\"");
 			
 		} catch (IOException e1) {
 			log.logger.error("Log4j(): Couldn't get the Text from the LogFile to show it in TextField: "+ tf.getName());
